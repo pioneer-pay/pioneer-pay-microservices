@@ -1,0 +1,24 @@
+version: 0.2
+
+phases:
+  install:
+    runtime-versions:
+      java: corretto11
+
+  build:
+    commands:
+      - echo Building the Spring Boot microservices project...
+      - mvn clean install
+  post_build:
+    commands:
+      - echo Build completed on `date`
+
+artifacts:
+  files:
+    - apigateway/target/*.jar
+    - serviceregistry/target/*.jar
+    - userservice/target/*.jar
+    - accountservice/target/*.jar
+    - transaction/target/*.jar
+  name: pioneer-pay-microservices
+  discard-paths: no

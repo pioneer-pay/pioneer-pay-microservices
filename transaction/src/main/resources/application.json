@@ -1,0 +1,23 @@
+ [
+      {"name": "United States", "code": "USD", "fee": 2.5, "minFee":1, "maxFee":10},
+      {"name": "China", "code": "CNY" ,"fee": 2, "minFee":1, "maxFee":10},
+      {"name": "Japan", "code": "JPY","fee": 2, "minFee":1, "maxFee":10},
+      {"name": "Germany", "code": "EUR","fee":2, "minFee":1, "maxFee":10},
+      {"name": "India", "code": "INR" ,"fee":2, "minFee":1, "maxFee":10},
+      {"name": "United Kingdom", "code": "GBP","fee":2.5, "minFee":1, "maxFee":10},
+      {"name": "France", "code": "EUR","fee":2, "minFee":1, "maxFee":10},
+      {"name": "Brazil", "code": "BRL","fee":2, "minFee":1, "maxFee":10},
+      {"name": "Italy", "code": "EUR","fee":2, "minFee":1, "maxFee":10},
+      {"name": "Canada", "code": "CAD","fee":2, "minFee":1, "maxFee":10},
+      {"name": "South Korea", "code": "KRW","fee":2, "minFee":1, "maxFee":10},
+      {"name": "Australia", "code": "AUD","fee":2, "minFee":1, "maxFee":10},
+      {"name": "Russia", "code": "RUB","fee":2, "minFee":1, "maxFee":10},
+      {"name": "Spain", "code": "EUR","fee":2, "minFee":1, "maxFee":10},
+      {"name": "Mexico", "code": "MXN","fee":2, "minFee":1, "maxFee":10},
+      {"name": "Indonesia", "code": "IDR","fee":2, "minFee":1, "maxFee":10},
+      {"name": "Netherlands", "code": "EUR","fee":2, "minFee":1, "maxFee":10},
+      {"name": "Turkey", "code": "TRY","fee":2, "minFee":1, "maxFee":10},
+      {"name": "Saudi Arabia", "code": "SAR","fee":2, "minFee":1, "maxFee":10},
+      {"name": "Switzerland", "code": "CHF","fee":2, "minFee":1, "maxFee":10}
+ ]
+  
