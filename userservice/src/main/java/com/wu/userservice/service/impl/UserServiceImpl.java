@@ -4,8 +4,16 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import javax.mail.*;
+import javax.mail.internet.*;
+import java.util.Properties;
+
+import javax.mail.MessagingException;
+
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -164,7 +172,16 @@ public class UserServiceImpl implements UserRegiService {
     public List<User> getAll() {
       return userRepository.findAll();
     }
+    
+    @Override
+    public String generateOtp() {
+        int otp = (int) (Math.random() * 900000) + 100000;
+        return String.valueOf(otp);
+    }
 
+   
+
+    
    
 
    

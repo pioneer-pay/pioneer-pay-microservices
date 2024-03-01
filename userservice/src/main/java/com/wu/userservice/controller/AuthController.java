@@ -76,4 +76,15 @@ public class AuthController {
         return ResponseEntity.status(HttpStatus.OK).body(userRegiService.showTransactions(userId));
     }
 
+
+    //generate otp
+     @GetMapping("/otp")
+     public ResponseEntity<String> generateOtp() {
+         String otp = userRegiService.generateOtp();
+         return ResponseEntity.status(HttpStatus.OK).body(otp);
+     }
+
+
+  
+
 }
