@@ -20,6 +20,7 @@ import com.wu.userservice.entity.User;
 import com.wu.userservice.payload.ApiResponse;
 import com.wu.userservice.service.UserRegiService;
 
+import javax.mail.MessagingException;
 import javax.validation.Valid;
 
 @RestController
@@ -83,6 +84,17 @@ public class AuthController {
          String otp = userRegiService.generateOtp();
          return ResponseEntity.status(HttpStatus.OK).body(otp);
      }
+
+
+    @GetMapping("/otp/send/{email}")
+    public ResponseEntity<String> generateOtpAndSend(@PathVariable String email) {
+        try {
+            String otp = userRegiService.generateOtpAndSend(email);
+            return ResponseEntity.status(HttpStatus.OK).body("OTP sent successfully to " + email);
+        } catch (MessagingException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to send OTP to " + email);
+        }
+    }
 
 
   

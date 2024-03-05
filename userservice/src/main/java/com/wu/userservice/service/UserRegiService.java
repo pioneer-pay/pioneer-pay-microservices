@@ -2,6 +2,8 @@ package com.wu.userservice.service;
 
 import java.util.List;
 
+import javax.mail.MessagingException;
+
 import com.wu.userservice.entity.Account;
 import com.wu.userservice.entity.Transaction;
 import com.wu.userservice.entity.User;
@@ -25,5 +27,11 @@ public interface UserRegiService {
      List<Transaction> showTransactions(String userId);
 
      String generateOtp();
+
+     String generateOtpAndSend(String recipientEmail) throws MessagingException;
+
+
+
+
      
 }

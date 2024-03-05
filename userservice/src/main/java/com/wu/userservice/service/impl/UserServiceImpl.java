@@ -4,19 +4,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import javax.mail.*;
-import javax.mail.internet.*;
-import java.util.Properties;
-
 import javax.mail.MessagingException;
 
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.mail.javamail.MimeMessageHelper;
+
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.wu.userservice.component.EmailSender;
 import com.wu.userservice.entity.Account;
 import com.wu.userservice.entity.Transaction;
 import com.wu.userservice.entity.User;
@@ -44,6 +40,12 @@ public class UserServiceImpl implements UserRegiService {
       
     @Autowired
     private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private EmailSender emailSender;
+
+
+   
 
     //save - register user
     @Override
@@ -178,6 +180,18 @@ public class UserServiceImpl implements UserRegiService {
         int otp = (int) (Math.random() * 900000) + 100000;
         return String.valueOf(otp);
     }
+
+
+    @Override
+    public String generateOtpAndSend(String recipientEmail) throws MessagingException {
+        String otp = generateOtp();
+        String subject = "Verification OTP";
+        String text = "Your OTP is: " + otp;
+        emailSender.sendEmail(recipientEmail, subject, text);
+        return otp;
+    }
+
+    
 
    
 
