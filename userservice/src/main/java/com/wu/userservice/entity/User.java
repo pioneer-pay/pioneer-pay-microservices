@@ -38,5 +38,9 @@ public class User {
     private String city;
     private String state;
     private String password;
+    
+    //for verification using otp
+    private String otp;
+    private boolean verification;
      
 }

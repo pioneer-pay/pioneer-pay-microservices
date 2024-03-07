@@ -30,8 +30,7 @@ public interface UserRegiService {
 
      String generateOtpAndSend(String recipientEmail) throws MessagingException;
 
-
-
+     ApiResponse verifyEmail(String email, String enteredOtp);
 
      
 }

@@ -3,6 +3,9 @@ package com.wu.userservice.service.impl;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import javax.mail.MessagingException;
 
@@ -184,12 +187,61 @@ public class UserServiceImpl implements UserRegiService {
 
     @Override
     public String generateOtpAndSend(String recipientEmail) throws MessagingException {
-        String otp = generateOtp();
-        String subject = "Verification OTP";
-        String text = "Your OTP is: " + otp;
-        emailSender.sendEmail(recipientEmail, subject, text);
-        return otp;
+      
+      String otp = generateOtp();
+
+      //save the otp temporarily
+      User user = userRepository.findByEmailId(recipientEmail);
+
+      if (user == null) {
+        
+        logger.error("User with email {} not found.", recipientEmail);
+        throw new ResourceNotFoundException("User not found with email "+ recipientEmail);
+      }
+
+      user.setOtp(otp);
+      userRepository.save(user);
+
+      
+      ScheduledExecutorService executorService = Executors.newScheduledThreadPool(1);
+      executorService.schedule(() -> {
+        user.setOtp(null); 
+        userRepository.save(user);
+        logger.info("OTP for user {} has been reset.", user.getUserId());
+      }, 300, TimeUnit.SECONDS);
+
+
+      String subject = "Verification OTP";
+      String text = "Your OTP is: " + otp;
+      emailSender.sendEmail(recipientEmail, subject, text);
+
+      return otp;
     }
+
+
+    @Override
+    public ApiResponse verifyEmail(String email, String enteredOtp) {
+    User user = userRepository.findByEmailId(email);
+    if (user == null) {
+        logger.error("User with email {} not found.", email);
+        throw new ResourceNotFoundException("User not found with email " + email);
+    }
+    
+    if (user.getOtp() == null || user.getOtp().isEmpty()) {
+        return new ApiResponse("OTP expired. Please request a new one.", false, null);
+    }
+    
+   
+    if (enteredOtp.equals(user.getOtp())) {
+       
+        user.setVerification(true);
+        user.setOtp(null); 
+        userRepository.save(user);
+        return new ApiResponse("Email verified successfully.", true, null);
+    } else {
+        return new ApiResponse("Invalid OTP. Email verification failed.", false, null);
+    }
+}
 
     
 
