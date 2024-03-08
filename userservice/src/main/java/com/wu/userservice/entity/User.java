@@ -1,5 +1,6 @@
 package com.wu.userservice.entity;
 
+import java.time.Instant;
 import java.util.Date;
 
 import javax.persistence.Column;
@@ -42,5 +43,15 @@ public class User {
     //for verification using otp
     private String otp;
     private boolean verification;
+
+    private Instant otpExpiration;
+
+    public void setOtpExpiration(Instant otpExpiration) {
+        this.otpExpiration = otpExpiration;
+    }
+
+    public Instant getOtpExpiration() {
+        return otpExpiration;
+    }
      
 }

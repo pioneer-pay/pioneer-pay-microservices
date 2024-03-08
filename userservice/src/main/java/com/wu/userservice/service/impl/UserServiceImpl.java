@@ -1,5 +1,7 @@
 package com.wu.userservice.service.impl;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -200,16 +202,11 @@ public class UserServiceImpl implements UserRegiService {
       }
 
       user.setOtp(otp);
-      userRepository.save(user);
 
+      //setting an expiry for otp without deleting from database
+      user.setOtpExpiration(Instant.now().plus(Duration.ofMinutes(2))); 
       
-      ScheduledExecutorService executorService = Executors.newScheduledThreadPool(1);
-      executorService.schedule(() -> {
-        user.setOtp(null); 
-        userRepository.save(user);
-        logger.info("OTP for user {} has been reset.", user.getUserId());
-      }, 300, TimeUnit.SECONDS);
-
+      userRepository.save(user);
 
       String subject = "Verification OTP";
       String text = "Your OTP is: " + otp;
@@ -229,6 +226,13 @@ public class UserServiceImpl implements UserRegiService {
     
     if (user.getOtp() == null || user.getOtp().isEmpty()) {
         return new ApiResponse("OTP expired. Please request a new one.", false, null);
+    }
+
+    if (Instant.now().isAfter(user.getOtpExpiration())) {
+      
+      user.setOtp(null);
+      userRepository.save(user);
+      return new ApiResponse("OTP expired. Please request a new one.", false, null);
     }
     
    
