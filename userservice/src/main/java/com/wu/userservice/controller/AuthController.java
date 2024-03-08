@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.wu.userservice.entity.Account;
@@ -20,6 +21,7 @@ import com.wu.userservice.entity.User;
 import com.wu.userservice.payload.ApiResponse;
 import com.wu.userservice.service.UserRegiService;
 
+import javax.mail.MessagingException;
 import javax.validation.Valid;
 
 @RestController
@@ -75,5 +77,33 @@ public class AuthController {
     public ResponseEntity<List<Transaction>> showTransactions(@PathVariable String userId){
         return ResponseEntity.status(HttpStatus.OK).body(userRegiService.showTransactions(userId));
     }
+
+
+    //generate otp
+     @GetMapping("/otp")
+     public ResponseEntity<String> generateOtp() {
+         String otp = userRegiService.generateOtp();
+         return ResponseEntity.status(HttpStatus.OK).body(otp);
+     }
+
+
+    @GetMapping("/otp/send/{email}")
+    public ResponseEntity<String> generateOtpAndSend(@PathVariable String email) {
+        try {
+            String otp = userRegiService.generateOtpAndSend(email);
+            return ResponseEntity.status(HttpStatus.OK).body("OTP sent successfully to " + email);
+        } catch (MessagingException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to send OTP to " + email);
+        }
+    }
+
+    @PostMapping("/verification/{email}")
+    public ResponseEntity<ApiResponse> verifyEmail(@PathVariable String email, @RequestParam String otp) {
+        ApiResponse response = userRegiService.verifyEmail(email, otp);
+        return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
+
+
+  
 
 }
