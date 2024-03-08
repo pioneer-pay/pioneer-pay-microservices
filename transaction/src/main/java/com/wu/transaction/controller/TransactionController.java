@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.wu.transaction.entity.Account;
+import com.wu.transaction.entity.SendMoneyReminder;
 import com.wu.transaction.entity.Summary;
 import com.wu.transaction.entity.Transaction;
 import com.wu.transaction.payload.ApiResponse;
@@ -63,4 +65,16 @@ public class TransactionController {
     {
         return ResponseEntity.status(HttpStatus.OK).body(transactionService.getSummary(baseCurrencyCode, targetCurrencyCode, amount));
     }
+
+   
+
+      //To save the send money reminder in database
+      @PostMapping("/createreminder")
+      public ResponseEntity<ApiResponse>createReminder(@RequestBody SendMoneyReminder sendMoneyReminder){
+          return ResponseEntity.status(HttpStatus.OK).body(transactionService.saveReminder(sendMoneyReminder));
+      }
+
+
+
+
 }

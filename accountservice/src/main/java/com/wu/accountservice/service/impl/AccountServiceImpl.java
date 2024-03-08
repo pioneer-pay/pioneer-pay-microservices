@@ -132,6 +132,10 @@ public class AccountServiceImpl implements AccountService{
       return accountRepository.findByAccountId(accountId);
     }
    
-
+    @Override
+    public String getUserIdByAcountId(String accountId){
+        Account account=accountRepository.findByAccountId(accountId);
+        return account.getUserId();
+    }
     
 }

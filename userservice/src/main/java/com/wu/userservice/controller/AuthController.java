@@ -21,6 +21,8 @@ import com.wu.userservice.payload.ApiResponse;
 import com.wu.userservice.service.UserRegiService;
 
 import javax.validation.Valid;
+import org.springframework.web.bind.annotation.RequestParam;
+
 
 @RestController
 @RequestMapping("/api/user")
@@ -75,5 +77,17 @@ public class AuthController {
     public ResponseEntity<List<Transaction>> showTransactions(@PathVariable String userId){
         return ResponseEntity.status(HttpStatus.OK).body(userRegiService.showTransactions(userId));
     }
+
+    @GetMapping("/get/email/{userId}")
+    public ResponseEntity<String>getEmailByUserId(@PathVariable String userId){
+        return ResponseEntity.status(HttpStatus.OK).body(userRegiService.getEmailByUserId(userId));
+       }
+   
+    // @GetMapping("/get/userId/{email}")
+    // public ResponseEntity<String>getUserIdByEmail(@PathVariable String email){
+    //     return ResponseEntity.status(HttpStatus.OK).body(userRegiService.getUserIdByEmail(email));
+    // }
+      
+    
 
 }

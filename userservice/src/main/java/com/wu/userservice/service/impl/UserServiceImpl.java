@@ -165,7 +165,12 @@ public class UserServiceImpl implements UserRegiService {
       return userRepository.findAll();
     }
 
+    @Override
+    public String getEmailByUserId(String userId){
+      User user = userRepository.findByUserId(userId); 
+      return user.getEmailId();
+    }
    
-
+    // String getUserIdByEmail(String email);
    
 }

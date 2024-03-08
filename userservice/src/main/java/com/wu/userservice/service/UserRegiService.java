@@ -23,4 +23,8 @@ public interface UserRegiService {
      List<Account> getAccountDetails(String userId);
 
      List<Transaction> showTransactions(String userId);
+
+     String getEmailByUserId(String userId);
+
+     // String getUserIdByEmail(String email);
 }

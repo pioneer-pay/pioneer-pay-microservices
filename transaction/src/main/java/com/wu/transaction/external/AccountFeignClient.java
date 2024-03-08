@@ -1,6 +1,7 @@
 package com.wu.transaction.external;
 
 import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -17,7 +18,8 @@ public interface AccountFeignClient {
     @PutMapping("/api/account/update")
     public ApiResponse updateBalance(@RequestBody UpdateBalance updateBalance);
 
-    
+    @GetMapping("get/userId/{accountId}")
+    public ResponseEntity<String>getUserIdByAccountId(@PathVariable String accountId);
 
     
 }

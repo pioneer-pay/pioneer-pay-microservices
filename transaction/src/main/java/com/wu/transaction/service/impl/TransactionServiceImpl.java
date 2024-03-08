@@ -1,28 +1,37 @@
 package com.wu.transaction.service.impl;
 
+import java.sql.Date;
+import java.sql.Time;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
+import java.util.UUID;
 
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.wu.transaction.entity.PaymentMethod;
+import com.wu.transaction.entity.SendMoneyReminder;
 import com.wu.transaction.entity.Summary;
 import com.wu.transaction.entity.Transaction;
 import com.wu.transaction.entity.UpdateBalance;
 import com.wu.transaction.external.AccountFeignClient;
 import com.wu.transaction.payload.ApiResponse;
 import com.wu.transaction.repository.TransactionRepository;
+import com.wu.transaction.repository.SendMoneyReminderRepository;
 import com.wu.transaction.service.TransactionService;
+import com.wu.transaction.service.emailService.EmailService;
 import com.wu.transaction.service.exchnageRate.CurrencyService;
 import com.wu.transaction.service.exchnageRate.ExchangeService;
-
+import com.wu.transaction.entity.Email;
 @Service
 public class TransactionServiceImpl implements TransactionService {
 
     @Autowired
     private TransactionRepository transactionRepository;
+    @Autowired
+    private SendMoneyReminderRepository sendMoneyReminderRepository;
     
     @Autowired
     private ExchangeService exchangeService;
@@ -34,6 +43,8 @@ public class TransactionServiceImpl implements TransactionService {
     }
     @Autowired
     private CurrencyService currencyService;
+    @Autowired
+    private EmailService emailService;
 
     private final org.slf4j.Logger logger = LoggerFactory.getLogger(TransactionServiceImpl.class);
 
@@ -43,10 +54,30 @@ public class TransactionServiceImpl implements TransactionService {
         transaction.setTargetCurrencyCode(transaction.getTargetCurrencyCode());
        transaction.setStatus("PENDING");
        transactionRepository.save(transaction);
+          
+       
+       //send an email
+          Email email=new Email();
+          email.setSubject("Transaction Status");
+          email.setMessage("Hi,\n\nYour Transaction Initiated ,Please wait for the successful completion of the transaction.\n\n\nThank You");
+        //   String userId=accountFeignClient.getUserIdByAccountId(transaction.getFromAccountId());
+          String sendTo="apurvagokhale29@gmail.com";
+          emailService.sendEmail(sendTo,email);
+          logger.info("successfully sent an email after initiate transfer!!");
        logger.info("Transaction Initiated ,Please wait for the successful completion of the transaction.");
        return new ApiResponse("Transaction Initiated..",true);
     }
 
+
+    @Override
+    public ApiResponse saveReminder(SendMoneyReminder sendMoneyReminder){ 
+       sendMoneyReminder.setCreatedAt(LocalDateTime.now());
+       sendMoneyReminder.setModifiedAt(LocalDateTime.now()); 
+
+       sendMoneyReminder.setPayOut("BANK");
+       sendMoneyReminderRepository.save(sendMoneyReminder);
+       return new ApiResponse("Reminder Created!",true);
+    }
 
 
     @Override
