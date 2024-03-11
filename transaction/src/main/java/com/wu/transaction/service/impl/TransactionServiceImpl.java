@@ -8,13 +8,17 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.wu.transaction.entity.Email;
 import com.wu.transaction.entity.Summary;
 import com.wu.transaction.entity.Transaction;
 import com.wu.transaction.entity.UpdateBalance;
+import com.wu.transaction.entity.dao.NotificationRequest;
 import com.wu.transaction.external.AccountFeignClient;
+import com.wu.transaction.external.UserFeignClient;
 import com.wu.transaction.payload.ApiResponse;
 import com.wu.transaction.repository.TransactionRepository;
 import com.wu.transaction.service.TransactionService;
+import com.wu.transaction.service.emailService.EmailService;
 import com.wu.transaction.service.exchnageRate.CurrencyService;
 import com.wu.transaction.service.exchnageRate.ExchangeService;
 
@@ -27,28 +31,59 @@ public class TransactionServiceImpl implements TransactionService {
     @Autowired
     private ExchangeService exchangeService;
 
+
     private final AccountFeignClient accountFeignClient;
 
     public TransactionServiceImpl(AccountFeignClient accountFeignClient) {
         this.accountFeignClient = accountFeignClient;
     }
+
+
+    @Autowired
+    private UserFeignClient userFeignClient;
+
     @Autowired
     private CurrencyService currencyService;
 
+    @Autowired
+    private EmailService emailService;
+
     private final org.slf4j.Logger logger = LoggerFactory.getLogger(TransactionServiceImpl.class);
 
+
+    //Initiate transfer
     @Override
     public ApiResponse initiateTransfer(Transaction transaction) {
+
         transaction.setBaseCurrencyCode(transaction.getBaseCurrencyCode());
         transaction.setTargetCurrencyCode(transaction.getTargetCurrencyCode());
-       transaction.setStatus("PENDING");
-       transactionRepository.save(transaction);
-       logger.info("Transaction Initiated ,Please wait for the successful completion of the transaction.");
-       return new ApiResponse("Transaction Initiated..",true);
+        transaction.setStatus("PENDING");
+        transactionRepository.save(transaction);
+
+        //send an email
+        Email email=new Email();
+        email.setSubject("Transaction Status");
+        email.setMessage("Hi,\n\nYour Transaction Initiated ,Please wait for the successful completion of the transaction.\n\n\nThank You");
+        String userId=accountFeignClient.getUserIdByAccountId(transaction.getFromAccountId());
+        String sendTo=userFeignClient.getEmailByUserId(userId);
+        emailService.sendEmail(sendTo,email);
+        logger.info("successfully sent an email after initiate transfer!!");
+
+        
+        //create notification
+        String notificationMessage="Transaction Initiated ,Please wait for the successful completion of the transaction.";
+        NotificationRequest notificationRequest=new NotificationRequest();
+        notificationRequest.setMessage(notificationMessage);
+        notificationRequest.setUserId(userId);
+        userFeignClient.createNotification(notificationRequest);
+
+        logger.info("Transaction Initiated ,Please wait for the successful completion of the transaction.");
+        return new ApiResponse("Transaction Initiated..",true);
     }
 
 
 
+    //completion of transfer
     @Override
     public ApiResponse completeTransfer(Long transactionId) throws Exception {
         Transaction transaction = transactionRepository.findByTransactionId(transactionId);
@@ -59,18 +94,7 @@ public class TransactionServiceImpl implements TransactionService {
 
              Double fee = currencyService.getFeeByCode(transaction.getBaseCurrencyCode());
              feeAmount = (transaction.getAmount() * fee) / 100;
-            // if(transaction.getAmount()<=50 && transaction.getAmount()>0){
-            //     Double fee = currencyService.getMinFeeByCode(transaction.getBaseCurrencyCode());
-            //      feeAmount = (transaction.getAmount() * fee) / 100;
-            // }
-            // else if(transaction.getAmount()>50 && transaction.getAmount()<=100000){
-            //     Double fee = currencyService.getFeeByCode(transaction.getBaseCurrencyCode());
-            //     feeAmount = (transaction.getAmount() * fee) / 100;
-            // }
-            // else if(transaction.getAmount()>100000){
-            //     Double fee = currencyService.getMaxFeeByCode(transaction.getBaseCurrencyCode());
-            //    feeAmount = (transaction.getAmount() * fee) / 100;
-            // }
+
             Double transactionAmountAfterFee = transaction.getAmount() - feeAmount;
             transaction.setCommission(feeAmount);
     
@@ -81,6 +105,24 @@ public class TransactionServiceImpl implements TransactionService {
                 transaction.setStatus("FAILED");
                 transaction.setDateTime(LocalDateTime.now());
                 transactionRepository.save(transaction);
+
+                //send an email
+                Email email=new Email();
+                email.setSubject("Transaction Status");
+                email.setMessage("Hi,\n\nYour Transaction got FAILED,Please check your account balance and try again.\n\n\nThank You");
+                String userId=accountFeignClient.getUserIdByAccountId(transaction.getFromAccountId());
+                String sendTo=userFeignClient.getEmailByUserId(userId);
+                emailService.sendEmail(sendTo,email);
+
+                //create notification
+                String notificationMessage="Your transaction is FAILES,Please check your account balance";
+                NotificationRequest notificationRequest=new NotificationRequest();
+                notificationRequest.setMessage(notificationMessage);
+                notificationRequest.setUserId(userId);
+                userFeignClient.createNotification(notificationRequest);
+
+
+                logger.info("Email sent after transaction got FAILED");
                 return new ApiResponse("Insufficient balance", false);
             }
     
@@ -93,15 +135,36 @@ public class TransactionServiceImpl implements TransactionService {
             transaction.setDateTime(LocalDateTime.now());
             transaction.setStatus("SUCCESS");
             transactionRepository.save(transaction);
+
+            //send an email
+            Email email=new Email();
+            email.setSubject("Transaction Status");
+            email.setMessage("Hi,\n\nYour Transaction is Successful!!\n\n\nThank You.");
+            String userId=accountFeignClient.getUserIdByAccountId(transaction.getFromAccountId());
+            String sendTo=userFeignClient.getEmailByUserId(userId);
+            emailService.sendEmail(sendTo,email);
+            logger.info("Email sent successfully after successful transaction.");
+
+            //create notification
+            String notificationMessage="Your transaction is Successful!!";
+            NotificationRequest notificationRequest=new NotificationRequest();
+            notificationRequest.setMessage(notificationMessage);
+            notificationRequest.setUserId(userId);
+            userFeignClient.createNotification(notificationRequest);
+
+            
             logger.info("Transaction successful!!");
             return new ApiResponse("Transaction Successful", true);
-        } catch (Exception e) {
+        }catch (Exception e) {
             logger.error("An error occurred during the transaction: {}", e.getMessage());
             transaction.setStatus("FAILED");
             return new ApiResponse("An error occurred during the transaction", false);
         }
     }
     
+    
+
+    //Transaction History of User
     @Override
     public List<Transaction> getTransactionHistoryByAccountId(String accountId) {
         try {
@@ -112,7 +175,7 @@ public class TransactionServiceImpl implements TransactionService {
             }
             logger.info("Transaction History for :{}", accountId);
             return list;
-        } catch (Exception e) {
+        }catch (Exception e) {
             logger.error("Error occurred while fetching transaction history: {}", e.getMessage());
             return Collections.emptyList(); 
         }
@@ -120,7 +183,7 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
 
-
+    //transaction summary with exchange rate.
     @Override
     public Summary getSummary(String baseCurrencyCode, String targetCurrencyCode, Double amount) {
         Transaction transaction= new Transaction();
