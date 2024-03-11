@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.wu.transaction.entity.Email;
+import com.wu.transaction.service.emailService.EmailService;
 import com.wu.transaction.entity.Summary;
 import com.wu.transaction.entity.Transaction;
 import com.wu.transaction.payload.ApiResponse;
@@ -31,6 +33,9 @@ public class TransactionController {
     
     @Autowired
     private CurrencyService currencyService;
+
+    @Autowired
+    private EmailService emailService;
 
     //get fee from json file
     @GetMapping("/currency/{code}")
@@ -62,5 +67,12 @@ public class TransactionController {
     public ResponseEntity<Summary> showSummary(@PathVariable String baseCurrencyCode,@PathVariable String targetCurrencyCode,@PathVariable Double amount)
     {
         return ResponseEntity.status(HttpStatus.OK).body(transactionService.getSummary(baseCurrencyCode, targetCurrencyCode, amount));
+    }
+
+
+    @PostMapping("/email/send/{to}")
+    public String sendEmail(@PathVariable String to,@RequestBody Email email){
+        emailService.sendEmail(to, email);
+        return "successfully send the mail";
     }
 }
