@@ -1,14 +1,23 @@
 package com.wu.userservice.service.impl;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+
+import javax.mail.MessagingException;
 
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.wu.userservice.component.EmailSender;
 import com.wu.userservice.entity.Account;
 import com.wu.userservice.entity.Transaction;
 import com.wu.userservice.entity.User;
@@ -36,6 +45,12 @@ public class UserServiceImpl implements UserRegiService {
       
     @Autowired
     private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private EmailSender emailSender;
+
+
+   
 
     //save - register user
     @Override
@@ -164,7 +179,79 @@ public class UserServiceImpl implements UserRegiService {
     public List<User> getAll() {
       return userRepository.findAll();
     }
+    
+    @Override
+    public String generateOtp() {
+        int otp = (int) (Math.random() * 900000) + 100000;
+        return String.valueOf(otp);
+    }
 
+
+    @Override
+    public String generateOtpAndSend(String recipientEmail) throws MessagingException {
+      
+      String otp = generateOtp();
+
+      //save the otp temporarily
+      User user = userRepository.findByEmailId(recipientEmail);
+
+      if (user == null) {
+        
+        logger.error("User with email {} not found.", recipientEmail);
+        throw new ResourceNotFoundException("User not found with email "+ recipientEmail);
+      }
+
+      user.setOtp(otp);
+
+      //setting an expiry for otp without deleting from database
+      user.setOtpExpiration(Instant.now().plus(Duration.ofMinutes(2))); 
+      
+      userRepository.save(user);
+
+      String subject = "Verification OTP";
+      String text = "Your OTP is: " + otp;
+      emailSender.sendEmail(recipientEmail, subject, text);
+
+      return otp;
+    }
+
+
+    @Override
+    public ApiResponse verifyEmail(String email, String enteredOtp) {
+    User user = userRepository.findByEmailId(email);
+    if (user == null) {
+        logger.error("User with email {} not found.", email);
+        throw new ResourceNotFoundException("User not found with email " + email);
+    }
+    
+    if (user.getOtp() == null || user.getOtp().isEmpty()) {
+        return new ApiResponse("OTP expired. Please request a new one.", false, null);
+    }
+
+    if (Instant.now().isAfter(user.getOtpExpiration())) {
+      
+      user.setOtp(null);
+      userRepository.save(user);
+      return new ApiResponse("OTP expired. Please request a new one.", false, null);
+    }
+    
+   
+    if (enteredOtp.equals(user.getOtp())) {
+       
+        user.setVerification(true);
+        user.setOtp(null); 
+        userRepository.save(user);
+        return new ApiResponse("Email verified successfully.", true, null);
+    } else {
+        return new ApiResponse("Invalid OTP. Email verification failed.", false, null);
+    }
+}
+
+    
+
+   
+
+    
    
 
    
