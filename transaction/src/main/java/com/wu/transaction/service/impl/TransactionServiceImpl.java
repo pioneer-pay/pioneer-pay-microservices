@@ -78,6 +78,7 @@ public class TransactionServiceImpl implements TransactionService {
        sendMoneyReminder.setPayOut("BANK");
        sendMoneyReminder.setStatus(ReminderStatus.PENDING);
        sendMoneyReminderRepository.save(sendMoneyReminder);
+       logger.info("Successfully saved the reminder to database"); 
        return new ApiResponse("Reminder Created!",true);
     }
 
