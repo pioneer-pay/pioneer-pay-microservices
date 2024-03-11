@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.wu.transaction.entity.PaymentMethod;
+import com.wu.transaction.entity.ReminderStatus;
 import com.wu.transaction.entity.SendMoneyReminder;
 import com.wu.transaction.entity.Summary;
 import com.wu.transaction.entity.Transaction;
@@ -75,6 +76,7 @@ public class TransactionServiceImpl implements TransactionService {
        sendMoneyReminder.setModifiedAt(LocalDateTime.now()); 
 
        sendMoneyReminder.setPayOut("BANK");
+       sendMoneyReminder.setStatus(ReminderStatus.PENDING);
        sendMoneyReminderRepository.save(sendMoneyReminder);
        return new ApiResponse("Reminder Created!",true);
     }

@@ -36,8 +36,13 @@ public class SendMoneyReminder {
     private String destinationCountry;    
     private String payOut;
     private Double amount;
+   
     
     
     @Enumerated(EnumType.STRING)
     private PaymentMethod payIn;
+
+
+    @Enumerated(EnumType.STRING)
+    private ReminderStatus status; // Added status field
 }
