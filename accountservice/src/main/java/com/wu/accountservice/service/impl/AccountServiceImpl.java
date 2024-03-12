@@ -10,7 +10,6 @@ import org.springframework.stereotype.Service;
 
 import com.wu.accountservice.entity.Account;
 import com.wu.accountservice.entity.UpdateRequest;
-import com.wu.accountservice.entity.dao.NotificationRequest;
 import com.wu.accountservice.exception.AlreadyExistException;
 import com.wu.accountservice.exception.ResourceNotFoundException;
 import com.wu.accountservice.external.UserFeignClient;
@@ -105,13 +104,6 @@ public class AccountServiceImpl implements AccountService{
             account.setAccountId(accounts.get(0).getAccountId());
             accountRepository.save(account);
             logger.info("Account details updated successfully.");
-
-            //send notification
-            String message="Your Account details have been updated!";
-            NotificationRequest notificationRequest=new NotificationRequest();
-            notificationRequest.setMessage(message);
-            notificationRequest.setUserId(userId);
-            userFeignClient.createNotification(notificationRequest);
             return new ApiResponse("Account details Updated Successfully",true);
         }
         
