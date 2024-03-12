@@ -12,7 +12,6 @@ import com.wu.accountservice.entity.Account;
 import com.wu.accountservice.entity.UpdateRequest;
 import com.wu.accountservice.exception.AlreadyExistException;
 import com.wu.accountservice.exception.ResourceNotFoundException;
-import com.wu.accountservice.external.UserFeignClient;
 import com.wu.accountservice.payload.ApiResponse;
 import com.wu.accountservice.repository.AccountRepository;
 import com.wu.accountservice.service.AccountService;
@@ -23,12 +22,6 @@ public class AccountServiceImpl implements AccountService{
 
     @Autowired
     private AccountRepository accountRepository;
-
-    private final UserFeignClient userFeignClient;
-
-    public AccountServiceImpl(UserFeignClient userFeignClient) {
-        this.userFeignClient = userFeignClient;
-    }
 
     private final org.slf4j.Logger logger = LoggerFactory.getLogger(AccountServiceImpl.class);
 
