@@ -5,8 +5,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import javax.persistence.EntityNotFoundException;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -65,24 +63,6 @@ public class NotificationService {
         return notifications;
     }
     
-
-    //make notification as read=true
-    public void markNotificationAsRead(Long notificationId) {
-        Notification notification = notificationRepository.findById(notificationId)
-                                                          .orElseThrow(() -> new EntityNotFoundException("Notification not found"));
-        notification.setRead(true);
-        notificationRepository.save(notification);
-    }
-
-
-    // make all notification as read=true
-    public void markAllNotificationsAsRead(){
-        List<Notification> notifications = notificationRepository.findAll();
-        for (Notification notification : notifications) {
-            notification.setRead(true);
-        }
-        notificationRepository.saveAll(notifications);
-    }
 
 }
 
