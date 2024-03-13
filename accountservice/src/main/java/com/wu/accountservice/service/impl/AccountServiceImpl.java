@@ -99,9 +99,11 @@ public class AccountServiceImpl implements AccountService{
             logger.info("Account details updated successfully.");
             return new ApiResponse("Account details Updated Successfully",true);
         }
+        
         String randomId = UUID.randomUUID().toString();
         account.setAccountId(randomId);
         accountRepository.save(account);
+
         logger.info("Account created successfully.");
         return new ApiResponse("Account created Successfully",true);
 
@@ -133,5 +135,10 @@ public class AccountServiceImpl implements AccountService{
     }
    
 
+    @Override
+    public String getUserIdByAccountId(String accountId){
+        Account account=accountRepository.findByAccountId(accountId);
+        return account.getUserId();
+    }
     
 }

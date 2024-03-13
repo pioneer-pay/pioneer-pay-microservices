@@ -21,6 +21,7 @@ import com.wu.userservice.payload.ApiResponse;
 import com.wu.userservice.repository.UserRepository;
 import com.wu.userservice.service.UserRegiService;
 
+
 @Service
 public class UserServiceImpl implements UserRegiService {
     @Autowired
@@ -114,7 +115,6 @@ public class UserServiceImpl implements UserRegiService {
 
       userRepository.save(existingUser);
       logger.info("Updated Successfully:{}");
-
       return new ApiResponse("User detailed Updated Successfully!",true,existingUser.getUserId());
     
   }
@@ -163,6 +163,19 @@ public class UserServiceImpl implements UserRegiService {
     @Override
     public List<User> getAll() {
       return userRepository.findAll();
+    }
+
+    @Override
+    public String getEmailByUserId(String userId){
+      try
+      {
+        User user=userRepository.findByUserId(userId);
+        return user.getEmailId();
+      }
+      catch(Exception e){
+        e.printStackTrace();
+        return "EmailId not found";
+      }
     }
 
    
