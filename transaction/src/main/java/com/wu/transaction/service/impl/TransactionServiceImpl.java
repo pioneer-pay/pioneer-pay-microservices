@@ -49,27 +49,16 @@ public class TransactionServiceImpl implements TransactionService {
 
     private final org.slf4j.Logger logger = LoggerFactory.getLogger(TransactionServiceImpl.class);
 
-    @Override
+     @Override
     public ApiResponse initiateTransfer(Transaction transaction) {
-        transaction.setBaseCurrencyCode(transaction.getBaseCurrencyCode());
-        transaction.setTargetCurrencyCode(transaction.getTargetCurrencyCode());
+       transaction.setBaseCurrencyCode(transaction.getBaseCurrencyCode());
+       transaction.setTargetCurrencyCode(transaction.getTargetCurrencyCode());
        transaction.setStatus("PENDING");
        transactionRepository.save(transaction);
-          
-       
-       //send an email
-          Email email=new Email();
-          email.setSubject("Transaction Status");
-          email.setMessage("Hi,\n\nYour Transaction Initiated ,Please wait for the successful completion of the transaction.\n\n\nThank You");
-        //   String userId=accountFeignClient.getUserIdByAccountId(transaction.getFromAccountId());
-          String sendTo="apurvagokhale29@gmail.com";
-          emailService.sendEmail(sendTo,email);
-          logger.info("successfully sent an email after initiate transfer!!");
        logger.info("Transaction Initiated ,Please wait for the successful completion of the transaction.");
        return new ApiResponse("Transaction Initiated..",true);
     }
-
-
+ 
     @Override
     public ApiResponse saveReminder(SendMoneyReminder sendMoneyReminder){ 
        sendMoneyReminder.setCreatedAt(LocalDateTime.now());
