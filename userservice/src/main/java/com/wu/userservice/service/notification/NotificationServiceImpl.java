@@ -59,25 +59,39 @@ public class NotificationServiceImpl {
 
     //get all unread notifications
     public List<Notification> getUnreadNotifications(String userId) {
+        logger.info("Got all unread notification for {}",userId);
         return notificationRepository.findByUserIdAndIsReadFalse(userId);
     }
 
+
      //make notification as read=true
     public void markNotificationAsRead(Long notificationId) {
+        try{
         Notification notification = notificationRepository.findById(notificationId)
                                                           .orElseThrow(() -> new EntityNotFoundException("Notification not found"));
         notification.setRead(true);
+        logger.info("Marked Notification as read{}",notificationId);
         notificationRepository.save(notification);
+        }catch (Exception ex) {
+            System.err.println("An error occurred to mark notification as read: " + ex.getMessage());
+            logger.error("An Error occurred to mark notification as read.");
+            throw ex;
+        }
     }
  
  
     // make all notification as read=true
     public void markAllNotificationsAsRead(){
-        List<Notification> notifications = notificationRepository.findAll();
-        for (Notification notification : notifications) {
-            notification.setRead(true);
+        try{
+            List<Notification> notifications = notificationRepository.findAll();
+            for (Notification notification : notifications) {
+                notification.setRead(true);
+            }
+            logger.info("Marked all notifications as read.");
+            notificationRepository.saveAll(notifications);
+        }catch (Exception e) {
+            e.printStackTrace();
         }
-        notificationRepository.saveAll(notifications);
     }
 
     //get all notifications
@@ -92,6 +106,7 @@ public class NotificationServiceImpl {
             }
 
             Collections.reverse(notifications);
+            logger.info("List of notifications for {}",userId);
             return notifications;
         } catch (Exception e) {
             e.printStackTrace(); 
