@@ -95,6 +95,8 @@ public class UserServiceImpl implements UserRegiService {
 
     }
 
+    
+
     //update user
     @Override
     public ApiResponse updateUser(String userId,User user) {

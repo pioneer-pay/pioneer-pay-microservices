@@ -5,22 +5,24 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.wu.userservice.entity.Notification;
 import com.wu.userservice.repository.NotificationRepository;
+import com.wu.userservice.service.impl.UserServiceImpl;
 
 @Service
 public class NotificationService {
     @Autowired
     private NotificationRepository notificationRepository;
     
-
+    private final org.slf4j.Logger logger = LoggerFactory.getLogger(UserServiceImpl.class);
     //create notification
-    @SuppressWarnings("null")
     public String createNotification(String userId, String message) {
         try {
+
             Notification notification = new Notification();
             notification.setUserId(userId);
             notification.setMessage(message);
@@ -43,9 +45,11 @@ public class NotificationService {
                 }
             }
             notificationRepository.save(notification);
+            logger.info("notification created successfully!!");
             return "Notification Created Successfully";
+
         } catch (Exception e) {
-            // Log the error or handle it appropriately
+            logger.error("Failed to create notification", e);
             return "Failed to create notification"; 
         }
     }
@@ -58,9 +62,21 @@ public class NotificationService {
 
     //get all notifications
     public List<Notification> getAllNotifications(String userId){
-        List<Notification>notifications=notificationRepository.findAllByUserId(userId);
-        Collections.reverse(notifications);
-        return notifications;
+        try {
+            if (userId == null || userId.isEmpty()) {
+                throw new IllegalArgumentException("User ID cannot be null or empty");
+            }
+            List<Notification> notifications = notificationRepository.findAllByUserId(userId);
+            if (notifications == null || notifications.isEmpty()) {
+                return Collections.emptyList();
+            }
+
+            Collections.reverse(notifications);
+            return notifications;
+        } catch (Exception e) {
+            e.printStackTrace(); 
+            return Collections.emptyList();
+        }
     }
     
 

@@ -119,6 +119,11 @@ public class AccountServiceImpl implements AccountService{
         account.setAccountId(randomId);
         accountRepository.save(account);
 
+        String message="Your Account details have been Created!";
+        NotificationRequest notificationRequest=new NotificationRequest();
+        notificationRequest.setMessage(message);
+        notificationRequest.setUserId(userId);
+        userFeignClient.createNotification(notificationRequest);
         logger.info("Account created successfully.");
         return new ApiResponse("Account created Successfully",true);
 
