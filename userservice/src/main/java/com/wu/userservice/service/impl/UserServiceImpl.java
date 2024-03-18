@@ -20,7 +20,7 @@ import com.wu.userservice.external.TransactionFeignClient;
 import com.wu.userservice.payload.ApiResponse;
 import com.wu.userservice.repository.UserRepository;
 import com.wu.userservice.service.UserRegiService;
-import com.wu.userservice.service.notification.NotificationService;
+import com.wu.userservice.service.notification.NotificationServiceImpl;
 
 @Service
 public class UserServiceImpl implements UserRegiService {
@@ -28,7 +28,7 @@ public class UserServiceImpl implements UserRegiService {
     private UserRepository userRepository;
 
     @Autowired
-    private NotificationService notificationService;
+    private NotificationServiceImpl notificationService;
 
     @Autowired
     private AccountFeignClient accountFeignClient;
