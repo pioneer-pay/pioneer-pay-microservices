@@ -20,15 +20,13 @@ import com.wu.userservice.external.TransactionFeignClient;
 import com.wu.userservice.payload.ApiResponse;
 import com.wu.userservice.repository.UserRepository;
 import com.wu.userservice.service.UserRegiService;
-import com.wu.userservice.service.notification.NotificationService;
-
+import com.wu.userservice.service.notification.NotificationServiceImpl;
 @Service
 public class UserServiceImpl implements UserRegiService {
     @Autowired
     private UserRepository userRepository;
-
     @Autowired
-    private NotificationService notificationService;
+    private NotificationServiceImpl notificationService;
 
     @Autowired
     private AccountFeignClient accountFeignClient;
@@ -118,14 +116,14 @@ public class UserServiceImpl implements UserRegiService {
       existingUser.setCountry(user.getCountry());
       existingUser.setZip(user.getZip());
 
-      userRepository.save(existingUser);
-      logger.info("Updated Successfully:{}");
-
+      //send notification
       String notificationMessage = "Your profile details have been updated.";
       notificationService.createNotification(userId, notificationMessage);
 
+      
+      userRepository.save(existingUser);
+      logger.info("Updated Successfully:{}");
       return new ApiResponse("User detailed Updated Successfully!",true,existingUser.getUserId());
-    
   }
 
   //get user details

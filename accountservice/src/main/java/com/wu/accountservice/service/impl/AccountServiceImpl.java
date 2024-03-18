@@ -25,11 +25,8 @@ public class AccountServiceImpl implements AccountService{
     @Autowired
     private AccountRepository accountRepository;
 
-    private final UserFeignClient userFeignClient;
-
-    public AccountServiceImpl(UserFeignClient userFeignClient) {
-        this.userFeignClient = userFeignClient;
-    }
+    @Autowired
+    private UserFeignClient userFeignClient;
 
     private final org.slf4j.Logger logger = LoggerFactory.getLogger(AccountServiceImpl.class);
 
@@ -104,14 +101,16 @@ public class AccountServiceImpl implements AccountService{
         if(!accounts.isEmpty()){
             account.setAccountId(accounts.get(0).getAccountId());
             accountRepository.save(account);
-            logger.info("Account details updated successfully.");
 
             //send notification
-            String message="Your Account details have been updated!";
+            String message="Your Account deatils have been updated!!";
             NotificationRequest notificationRequest=new NotificationRequest();
             notificationRequest.setMessage(message);
             notificationRequest.setUserId(userId);
             userFeignClient.createNotification(notificationRequest);
+
+            
+            logger.info("Account details updated successfully.");
             return new ApiResponse("Account details Updated Successfully",true);
         }
         
@@ -119,11 +118,15 @@ public class AccountServiceImpl implements AccountService{
         account.setAccountId(randomId);
         accountRepository.save(account);
 
+
+        //send notification
         String message="Your Account details have been Created!";
         NotificationRequest notificationRequest=new NotificationRequest();
         notificationRequest.setMessage(message);
         notificationRequest.setUserId(userId);
         userFeignClient.createNotification(notificationRequest);
+
+
         logger.info("Account created successfully.");
         return new ApiResponse("Account created Successfully",true);
 

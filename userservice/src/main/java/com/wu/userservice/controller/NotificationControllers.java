@@ -14,13 +14,13 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.wu.userservice.entity.Notification;
 import com.wu.userservice.entity.NotificationRequest;
-import com.wu.userservice.service.notification.NotificationService;
+import com.wu.userservice.service.notification.NotificationServiceImpl;
 
 @RestController
 @RequestMapping("/api/notification")
-public class NotificationController {
+public class NotificationControllers {
     @Autowired
-    private NotificationService notificationService;
+    private NotificationServiceImpl notificationService;
 
     
     //create notification

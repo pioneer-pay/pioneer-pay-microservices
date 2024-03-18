@@ -18,7 +18,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import com.wu.userservice.entity.Notification;
 import com.wu.userservice.repository.NotificationRepository;
-import com.wu.userservice.service.notification.NotificationService;
+import com.wu.userservice.service.notification.NotificationServiceImpl;
 
 
 @ExtendWith(SpringExtension.class)
@@ -29,7 +29,7 @@ public class NotificationServiceTest {
     private NotificationRepository notificationRepository;
 
     @InjectMocks
-    private NotificationService notificationService;
+    private NotificationServiceImpl notificationService;
 
     @Test
     public void testCreateNotification_Success() {

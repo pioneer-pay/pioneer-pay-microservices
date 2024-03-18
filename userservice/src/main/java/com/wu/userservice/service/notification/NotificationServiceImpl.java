@@ -14,7 +14,7 @@ import com.wu.userservice.repository.NotificationRepository;
 import com.wu.userservice.service.impl.UserServiceImpl;
 
 @Service
-public class NotificationService {
+public class NotificationServiceImpl {
     @Autowired
     private NotificationRepository notificationRepository;
     

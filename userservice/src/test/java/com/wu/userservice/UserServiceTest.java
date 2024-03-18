@@ -22,7 +22,7 @@ import com.wu.userservice.payload.ApiResponse;
 import com.wu.userservice.repository.UserRepository;
 import com.wu.userservice.service.UserRegiService;
 import com.wu.userservice.service.impl.UserServiceImpl;
-import com.wu.userservice.service.notification.NotificationService;
+import com.wu.userservice.service.notification.NotificationServiceImpl;
 
 @ExtendWith(SpringExtension.class)
 @DataJpaTest
@@ -33,7 +33,7 @@ public class UserServiceTest {
     private UserRepository userRepository;
 
     @Mock
-    private NotificationService notificationService;
+    private NotificationServiceImpl notificationService;
 
     @InjectMocks
     private UserRegiService userService=new UserServiceImpl();

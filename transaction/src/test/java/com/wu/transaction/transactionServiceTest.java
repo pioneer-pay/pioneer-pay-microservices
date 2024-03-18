@@ -1,101 +1,94 @@
 // package com.wu.transaction;
 
-// import static org.junit.Assert.*;
+// import static org.junit.jupiter.api.Assertions.*;
+// import static org.mockito.ArgumentMatchers.*;
+// import static org.mockito.Mockito.*;
 
-// import org.junit.jupiter.api.Test;
+// import java.util.ArrayList;
+// import java.util.List;
+
+// import org.junit.Test;
 // import org.junit.jupiter.api.extension.ExtendWith;
 // import org.mockito.InjectMocks;
 // import org.mockito.Mock;
-// import org.mockito.Mockito;
-// import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-// import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-// import org.springframework.boot.test.mock.mockito.MockBean;
-// import org.springframework.test.context.junit.jupiter.SpringExtension;
+// import org.mockito.junit.jupiter.MockitoExtension;
+// import org.springframework.boot.test.context.SpringBootTest;
+// import org.springframework.test.context.TestPropertySource;
 
-// import com.wu.transaction.entity.Email;
 // import com.wu.transaction.entity.Transaction;
-// import com.wu.transaction.entity.dao.NotificationRequest;
 // import com.wu.transaction.external.AccountFeignClient;
-// import com.wu.transaction.external.UserFeignClient;
 // import com.wu.transaction.payload.ApiResponse;
 // import com.wu.transaction.repository.TransactionRepository;
-// import com.wu.transaction.service.emailService.EmailService;
+// import com.wu.transaction.service.TransactionService;
 // import com.wu.transaction.service.exchnageRate.CurrencyService;
 // import com.wu.transaction.service.exchnageRate.ExchangeService;
-// import com.wu.transaction.service.impl.TransactionServiceImpl;
 
+// @SpringBootTest
+// @ExtendWith(MockitoExtension.class)
+// @TestPropertySource("classpath:application-test.properties")
+// public class transactionServiceTest {
+//   @InjectMocks
+//    private TransactionService transactionService;
 
-// @ExtendWith(SpringExtension.class)
-// @DataJpaTest
-// @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-// public class TransactionServiceTest {
+//    @Mock
+//    private TransactionRepository transactionRepository;
 
-//     @Mock
-//     private TransactionRepository transactionRepository;
+//    @Mock
+//    private AccountFeignClient accountFeignClient;
 
-//     @MockBean
-//     private AccountFeignClient accountFeignClient;
+//    @Mock
+//    private CurrencyService currencyService;
 
-//     @MockBean
-//     private UserFeignClient userFeignClient;
+//    @Mock
+//    private ExchangeService exchangeService;
 
-//     @Mock
-//     private EmailService emailService;
+//    @Test
+//    public void testInitiateTransfer() {
+//        // Arrange
+//        Transaction transaction = new Transaction();  // Create a transaction
+//        transaction.setTransactionId(123L);
+//        transaction.setBaseCurrencyCode("USD");
+//        transaction.setTargetCurrencyCode("INR");
+//        transaction.setStatus("PENDING");
+//        // Act
+//        ApiResponse response = transactionService.initiateTransfer(transaction);
 
-//     @Mock
-//     private CurrencyService currencyService;
+//        // Assert
+//        verify(transactionRepository, times(1)).save(transaction);
 
-//     @Mock
-//     private ExchangeService exchangeService;
+//        assertEquals("Transaction Initiated..", response.getMessage());
+//        assertTrue(response.getStatus());
+//    }
 
-//     @InjectMocks
-//     private TransactionServiceImpl transactionService;
+//   @Test
+//    public void testCompleteTransfer() throws Exception {
+//        // Arrange
+//        Long transactionId = 123L;
+//        Transaction transaction = new Transaction();  // Create a transaction for the given transaction ID
+//        // Set up mock behavior for accountFeignClient, currencyService, and exchangeService as needed
 
-//     @Test
-//     public void testInitiateTransferSuccess() {
-//     // Mock transaction object
-//     Transaction transaction = new Transaction();
-//     transaction.setFromAccountId("fromAccount");
-//     transaction.setToAccountId("toACcount");
-//     transaction.setBaseCurrencyCode("USD");
-//     transaction.setTargetCurrencyCode("EUR");
-//     transaction.setAmount(100.0);
+//        when(transactionRepository.findByTransactionId(transactionId)).thenReturn(transaction);
+//        when(accountFeignClient.getBalance(anyString())).thenReturn(100.0);  // Mock the balance retrieval
+//        when(currencyService.getFeeByCode(anyString())).thenReturn(0.5);  // Mock the fee retrieval
+//        when(exchangeService.convertCurrency(anyString(), anyString(), anyDouble())).thenReturn(75.0);  // Mock the currency conversion
 
-//     // Mock accountFeignClient and userFeignClient behavior (using Mockito)
-//     Mockito.when(accountFeignClient.getUserIdByAccountId(transaction.getFromAccountId())).thenReturn("user1");
-//     Mockito.when(userFeignClient.getEmailByUserId("user1")).thenReturn("user1@example.com");
+//        // Act
+//        ApiResponse response = transactionService.completeTransfer(transactionId);
 
-//     // Call the method
-//     ApiResponse apiResponse = transactionService.initiateTransfer(transaction);
+//    }
 
-//     // Assert response
-//     assertEquals(apiResponse.getMessage(), "Transaction Initiated..");
-//     assertEquals(apiResponse.getStatus(), true);
+//    @Test
+//    public void testGetTransactionHistoryByAccountId() {
+//        // Arrange
+//        String accountId = "account123";
 
-//     // Verify email and notification calls
-//     Mockito.verify(emailService, Mockito.times(1)).sendEmail("user1@example.com", Mockito.any(Email.class));
-//     Mockito.verify(userFeignClient, Mockito.times(1)).createNotification(Mockito.any(NotificationRequest.class));
-//     }
+//        // Mock the behavior of transactionRepository.findByFromAccountIdOrToAccountId()
+//        List<Transaction> mockTransactionList = new ArrayList<>();  // Create a mock list of transactions
+//        when(transactionRepository.findByFromAccountIdOrToAccountId(accountId, accountId)).thenReturn(mockTransactionList);
 
-//     @Test
-//     public void testInitiateTransferInsufficientBalance() throws Exception {
-//     // Mock transaction object with insufficient balance
-//     Transaction transaction = new Transaction();
-//     transaction.setFromAccountId("fromAccount");
-//     transaction.setToAccountId("toAccount");
-//     transaction.setBaseCurrencyCode("USD");
-//     transaction.setTargetCurrencyCode("EUR");
-//     transaction.setAmount(1000.0);
+//        // Act
+//        List<Transaction> transactionHistory = transactionService.getTransactionHistoryByAccountId(accountId);
+//        assertEquals(mockTransactionList, transactionHistory);
+//    }
 
-//     // Mock accountFeignClient to throw exception for getBalance
-//     Mockito.when(accountFeignClient.getBalance(transaction.getFromAccountId())).thenThrow(new Exception("Insufficient balance"));
-//     try {
-//         transactionService.initiateTransfer(transaction);
-//         fail("Expected exception not thrown"); // This line will fail if no exception is thrown
-//       } catch (RuntimeException e) {
-//         // Assert the exception message
-//         assertTrue(e.getMessage().contains("Insufficient balance"));
-//       }
-
-//     }
 // }
