@@ -76,6 +76,7 @@ public class TransactionServiceImpl implements TransactionService {
         notificationRequest.setMessage(notificationMessage);
         notificationRequest.setUserId(userId);
         userFeignClient.createNotification(notificationRequest);
+        logger.info("Notification addedd successfully!");
 
         logger.info("Transaction Initiated ,Please wait for the successful completion of the transaction.");
         return new ApiResponse("Transaction Initiated..",true);
@@ -120,7 +121,7 @@ public class TransactionServiceImpl implements TransactionService {
                 notificationRequest.setMessage(notificationMessage);
                 notificationRequest.setUserId(userId);
                 userFeignClient.createNotification(notificationRequest);
-
+                logger.info("Notification added successfully!");
 
                 logger.info("Email sent after transaction got FAILED");
                 return new ApiResponse("Insufficient balance", false);
