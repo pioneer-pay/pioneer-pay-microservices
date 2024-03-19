@@ -60,7 +60,7 @@ public class TransactionServiceImpl implements TransactionService {
         transaction.setStatus("PENDING");
         transactionRepository.save(transaction);
 
-        //send an email
+        //send an email on initiate transfer
         Email email=new Email();
         email.setSubject("Transaction Status");
         email.setMessage("Hi,\n\nYour Transaction Initiated ,Please wait for the successful completion of the transaction.\n\n\nThank You");
@@ -70,7 +70,7 @@ public class TransactionServiceImpl implements TransactionService {
         logger.info("successfully sent an email after initiate transfer!!");
 
 
-        //create notification
+        //send notification initiate transfer
         String notificationMessage="Transaction Initiated ,Please wait for the successful completion of the transaction.";
         NotificationRequest notificationRequest=new NotificationRequest();
         notificationRequest.setMessage(notificationMessage);
@@ -106,7 +106,7 @@ public class TransactionServiceImpl implements TransactionService {
                 transaction.setDateTime(LocalDateTime.now());
                 transactionRepository.save(transaction);
 
-                //send an email
+                //send an email on Failed transfer
                 Email email=new Email();
                 email.setSubject("Transaction Status");
                 email.setMessage("Hi,\n\nYour Transaction got FAILED,Please check your account balance and try again.\n\n\nThank You");
@@ -115,7 +115,7 @@ public class TransactionServiceImpl implements TransactionService {
                 emailService.sendEmail(sendTo,email);
 
 
-                //create notification
+                //send notification on Failed Transfer
                 String notificationMessage="Your transaction is FAILES,Please check your account balance";
                 NotificationRequest notificationRequest=new NotificationRequest();
                 notificationRequest.setMessage(notificationMessage);
@@ -138,7 +138,7 @@ public class TransactionServiceImpl implements TransactionService {
             transaction.setStatus("SUCCESS");
             transactionRepository.save(transaction);
 
-            //send an email
+            //send an email on Successful Transfer
             Email email=new Email();
             email.setSubject("Transaction Status");
             email.setMessage("Hi,\n\nYour Transaction is Successful!!\n\n\nThank You.");
@@ -148,7 +148,7 @@ public class TransactionServiceImpl implements TransactionService {
             logger.info("Email sent successfully after successful transaction.");
 
 
-            //send notification
+            //send notification on Successful Transfer
             String notificationMessage="Your transaction is Successful!!";
             NotificationRequest notificationRequest=new NotificationRequest();
             notificationRequest.setMessage(notificationMessage);
