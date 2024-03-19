@@ -12,6 +12,7 @@ import com.wu.transaction.entity.Email;
 import com.wu.transaction.entity.Summary;
 import com.wu.transaction.entity.Transaction;
 import com.wu.transaction.entity.UpdateBalance;
+import com.wu.transaction.entity.dao.NotificationRequest;
 import com.wu.transaction.external.AccountFeignClient;
 import com.wu.transaction.external.UserFeignClient;
 import com.wu.transaction.payload.ApiResponse;
@@ -59,7 +60,7 @@ public class TransactionServiceImpl implements TransactionService {
         transaction.setStatus("PENDING");
         transactionRepository.save(transaction);
 
-        //send an email
+        //send an email on initiate transfer
         Email email=new Email();
         email.setSubject("Transaction Status");
         email.setMessage("Hi,\n\nYour Transaction Initiated ,Please wait for the successful completion of the transaction.\n\n\nThank You");
@@ -68,6 +69,14 @@ public class TransactionServiceImpl implements TransactionService {
         emailService.sendEmail(sendTo,email);
         logger.info("successfully sent an email after initiate transfer!!");
 
+
+        //send notification initiate transfer
+        String notificationMessage="Transaction Initiated ,Please wait for the successful completion of the transaction.";
+        NotificationRequest notificationRequest=new NotificationRequest();
+        notificationRequest.setMessage(notificationMessage);
+        notificationRequest.setUserId(userId);
+        userFeignClient.createNotification(notificationRequest);
+        logger.info("Notification addedd successfully!");
         logger.info("Transaction Initiated ,Please wait for the successful completion of the transaction.");
         return new ApiResponse("Transaction Initiated..",true);
     }
@@ -97,13 +106,23 @@ public class TransactionServiceImpl implements TransactionService {
                 transaction.setDateTime(LocalDateTime.now());
                 transactionRepository.save(transaction);
 
-                //send an email
+                //send an email on Failed transfer
                 Email email=new Email();
                 email.setSubject("Transaction Status");
                 email.setMessage("Hi,\n\nYour Transaction got FAILED,Please check your account balance and try again.\n\n\nThank You");
                 String userId=accountFeignClient.getUserIdByAccountId(transaction.getFromAccountId());
                 String sendTo=userFeignClient.getEmailByUserId(userId);
                 emailService.sendEmail(sendTo,email);
+
+
+                //send notification on Failed Transfer
+                String notificationMessage="Your transaction is FAILES,Please check your account balance";
+                NotificationRequest notificationRequest=new NotificationRequest();
+                notificationRequest.setMessage(notificationMessage);
+                notificationRequest.setUserId(userId);
+                userFeignClient.createNotification(notificationRequest);
+                logger.info("Notification added successfully!");
+
 
                 logger.info("Email sent after transaction got FAILED");
                 return new ApiResponse("Insufficient balance", false);
@@ -119,7 +138,7 @@ public class TransactionServiceImpl implements TransactionService {
             transaction.setStatus("SUCCESS");
             transactionRepository.save(transaction);
 
-            //send an email
+            //send an email on Successful Transfer
             Email email=new Email();
             email.setSubject("Transaction Status");
             email.setMessage("Hi,\n\nYour Transaction is Successful!!\n\n\nThank You.");
@@ -127,7 +146,17 @@ public class TransactionServiceImpl implements TransactionService {
             String sendTo=userFeignClient.getEmailByUserId(userId);
             emailService.sendEmail(sendTo,email);
             logger.info("Email sent successfully after successful transaction.");
+
+
+            //send notification on Successful Transfer
+            String notificationMessage="Your transaction is Successful!!";
+            NotificationRequest notificationRequest=new NotificationRequest();
+            notificationRequest.setMessage(notificationMessage);
+            notificationRequest.setUserId(userId);
+            userFeignClient.createNotification(notificationRequest);
+            logger.info("Notification added successfully!");
             
+
             logger.info("Transaction successful!!");
             return new ApiResponse("Transaction Successful", true);
         }catch (Exception e) {

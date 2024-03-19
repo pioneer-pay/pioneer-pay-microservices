@@ -28,7 +28,7 @@ public class ExchangeService {
     }
     
         public JSONObject getExchangeRates() throws Exception {
-        String url = "https://v6.exchangerate-api.com/v6/c2ce17e238d052953dbe890a/latest/USD"; // Replace with the appropriate API endpoint
+        String url = "https://v6.exchangerate-api.com/v6/b727d899c9f1e15a4d054c4f/latest/USD"; // Replace with the appropriate API endpoint
     
         HttpClient client = HttpClientBuilder.create().build();
         HttpGet request = new HttpGet(url);
