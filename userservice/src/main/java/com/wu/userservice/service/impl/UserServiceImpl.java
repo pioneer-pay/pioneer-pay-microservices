@@ -174,6 +174,7 @@ public class UserServiceImpl implements UserRegiService {
 
     @Override
     public String getEmailByUserId(String userId){
+
       try
       {
         User user=userRepository.findByUserId(userId);
@@ -184,8 +185,7 @@ public class UserServiceImpl implements UserRegiService {
         return "EmailId not found";
       }
     }
-
    
-
+    // String getUserIdByEmail(String email);
    
 }

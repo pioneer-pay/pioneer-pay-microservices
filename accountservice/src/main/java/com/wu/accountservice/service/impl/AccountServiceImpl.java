@@ -157,7 +157,6 @@ public class AccountServiceImpl implements AccountService{
       return accountRepository.findByAccountId(accountId);
     }
    
-
     @Override
     public String getUserIdByAccountId(String accountId){
         Account account=accountRepository.findByAccountId(accountId);
