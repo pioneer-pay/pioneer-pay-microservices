@@ -10,8 +10,10 @@ import org.springframework.stereotype.Service;
 
 import com.wu.accountservice.entity.Account;
 import com.wu.accountservice.entity.UpdateRequest;
+import com.wu.accountservice.entity.dao.NotificationRequest;
 import com.wu.accountservice.exception.AlreadyExistException;
 import com.wu.accountservice.exception.ResourceNotFoundException;
+import com.wu.accountservice.external.UserFeignClient;
 import com.wu.accountservice.payload.ApiResponse;
 import com.wu.accountservice.repository.AccountRepository;
 import com.wu.accountservice.service.AccountService;
@@ -22,6 +24,9 @@ public class AccountServiceImpl implements AccountService{
 
     @Autowired
     private AccountRepository accountRepository;
+
+    @Autowired
+    private UserFeignClient userFeignClient;
 
     private final org.slf4j.Logger logger = LoggerFactory.getLogger(AccountServiceImpl.class);
 
@@ -96,12 +101,32 @@ public class AccountServiceImpl implements AccountService{
         if(!accounts.isEmpty()){
             account.setAccountId(accounts.get(0).getAccountId());
             accountRepository.save(account);
+
+            //send notification
+            String message="Your Account deatils have been updated!!";
+            NotificationRequest notificationRequest=new NotificationRequest();
+            notificationRequest.setMessage(message);
+            notificationRequest.setUserId(userId);
+            userFeignClient.createNotification(notificationRequest);
+
+            
             logger.info("Account details updated successfully.");
             return new ApiResponse("Account details Updated Successfully",true);
         }
+        
         String randomId = UUID.randomUUID().toString();
         account.setAccountId(randomId);
         accountRepository.save(account);
+
+
+        //send notification
+        String message="Your Account details have been Created!";
+        NotificationRequest notificationRequest=new NotificationRequest();
+        notificationRequest.setMessage(message);
+        notificationRequest.setUserId(userId);
+        userFeignClient.createNotification(notificationRequest);
+
+
         logger.info("Account created successfully.");
         return new ApiResponse("Account created Successfully",true);
 
@@ -133,7 +158,7 @@ public class AccountServiceImpl implements AccountService{
     }
    
     @Override
-    public String getUserIdByAcountId(String accountId){
+    public String getUserIdByAccountId(String accountId){
         Account account=accountRepository.findByAccountId(accountId);
         return account.getUserId();
     }

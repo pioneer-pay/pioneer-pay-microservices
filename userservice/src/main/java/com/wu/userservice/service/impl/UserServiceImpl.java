@@ -20,11 +20,13 @@ import com.wu.userservice.external.TransactionFeignClient;
 import com.wu.userservice.payload.ApiResponse;
 import com.wu.userservice.repository.UserRepository;
 import com.wu.userservice.service.UserRegiService;
-
+import com.wu.userservice.service.notification.NotificationServiceImpl;
 @Service
 public class UserServiceImpl implements UserRegiService {
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private NotificationServiceImpl notificationService;
 
     @Autowired
     private AccountFeignClient accountFeignClient;
@@ -91,6 +93,8 @@ public class UserServiceImpl implements UserRegiService {
 
     }
 
+    
+
     //update user
     @Override
     public ApiResponse updateUser(String userId,User user) {
@@ -112,11 +116,14 @@ public class UserServiceImpl implements UserRegiService {
       existingUser.setCountry(user.getCountry());
       existingUser.setZip(user.getZip());
 
+      //send notification
+      String notificationMessage = "Your profile details have been updated.";
+      notificationService.createNotification(userId, notificationMessage);
+
+      
       userRepository.save(existingUser);
       logger.info("Updated Successfully:{}");
-
       return new ApiResponse("User detailed Updated Successfully!",true,existingUser.getUserId());
-    
   }
 
   //get user details
@@ -167,8 +174,16 @@ public class UserServiceImpl implements UserRegiService {
 
     @Override
     public String getEmailByUserId(String userId){
-      User user = userRepository.findByUserId(userId); 
-      return user.getEmailId();
+
+      try
+      {
+        User user=userRepository.findByUserId(userId);
+        return user.getEmailId();
+      }
+      catch(Exception e){
+        e.printStackTrace();
+        return "EmailId not found";
+      }
     }
    
     // String getUserIdByEmail(String email);

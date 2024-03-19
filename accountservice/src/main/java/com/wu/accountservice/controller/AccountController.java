@@ -76,8 +76,8 @@ public class AccountController {
     return ResponseEntity.status(HttpStatus.OK).body(accountService.getAllExcept(accountId));
    }
 
-   @GetMapping("get/userId/{accountId}")
+   @GetMapping("/get/userid/{accountId}")
    public ResponseEntity<String>getUserIdByAccountId(@PathVariable String accountId){
-    return ResponseEntity.status(HttpStatus.OK).body(accountService.getUserIdByAcountId(accountId));
+        return ResponseEntity.status(HttpStatus.OK).body(accountService.getUserIdByAccountId(accountId));
    }
 }

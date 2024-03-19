@@ -18,8 +18,7 @@ public interface AccountFeignClient {
     @PutMapping("/api/account/update")
     public ApiResponse updateBalance(@RequestBody UpdateBalance updateBalance);
 
-    @GetMapping("get/userId/{accountId}")
-    public ResponseEntity<String>getUserIdByAccountId(@PathVariable String accountId);
-
+    @GetMapping("/api/account/get/userid/{accountId}")
+    public String getUserIdByAccountId(@PathVariable String accountId);
     
 }

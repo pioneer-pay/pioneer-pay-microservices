@@ -2,6 +2,8 @@ package com.wu.userservice.controller;
 
 import java.util.List;
 
+import javax.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,11 +21,8 @@ import com.wu.userservice.entity.Transaction;
 import com.wu.userservice.entity.User;
 import com.wu.userservice.payload.ApiResponse;
 import com.wu.userservice.service.UserRegiService;
-
 import javax.validation.Valid;
 import org.springframework.web.bind.annotation.RequestParam;
-
-
 @RestController
 @RequestMapping("/api/user")
 @CrossOrigin
@@ -31,6 +30,8 @@ public class AuthController {
     
     @Autowired
     private UserRegiService userRegiService;
+
+    
 
     //register user
     @PostMapping("/signup")
@@ -78,16 +79,10 @@ public class AuthController {
         return ResponseEntity.status(HttpStatus.OK).body(userRegiService.showTransactions(userId));
     }
 
+    //get emailId of user
     @GetMapping("/get/email/{userId}")
     public ResponseEntity<String>getEmailByUserId(@PathVariable String userId){
         return ResponseEntity.status(HttpStatus.OK).body(userRegiService.getEmailByUserId(userId));
-       }
-   
-    // @GetMapping("/get/userId/{email}")
-    // public ResponseEntity<String>getUserIdByEmail(@PathVariable String email){
-    //     return ResponseEntity.status(HttpStatus.OK).body(userRegiService.getUserIdByEmail(email));
-    // }
-      
-    
+    }    
 
 }

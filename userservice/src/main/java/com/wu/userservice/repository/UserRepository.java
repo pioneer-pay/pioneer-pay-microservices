@@ -1,10 +1,9 @@
 package com.wu.userservice.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
 import com.wu.userservice.entity.User;
-import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Repository;
 
 
 @Repository
