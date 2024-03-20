@@ -1,18 +1,16 @@
 package com.wu.transaction.service.impl;
 
-import java.sql.Date;
-import java.sql.Time;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
-import java.util.UUID;
+
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import com.wu.transaction.entity.PaymentMethod;
+
+import com.wu.transaction.entity.Email;
 import com.wu.transaction.entity.ReminderStatus;
 import com.wu.transaction.entity.SendMoneyReminder;
-import com.wu.transaction.entity.Email;
 import com.wu.transaction.entity.Summary;
 import com.wu.transaction.entity.Transaction;
 import com.wu.transaction.entity.UpdateBalance;
@@ -20,13 +18,12 @@ import com.wu.transaction.entity.dao.NotificationRequest;
 import com.wu.transaction.external.AccountFeignClient;
 import com.wu.transaction.external.UserFeignClient;
 import com.wu.transaction.payload.ApiResponse;
-import com.wu.transaction.repository.TransactionRepository;
 import com.wu.transaction.repository.SendMoneyReminderRepository;
+import com.wu.transaction.repository.TransactionRepository;
 import com.wu.transaction.service.TransactionService;
 import com.wu.transaction.service.emailService.EmailService;
 import com.wu.transaction.service.exchnageRate.CurrencyService;
 import com.wu.transaction.service.exchnageRate.ExchangeService;
-import com.wu.transaction.entity.Email;
 @Service
 public class TransactionServiceImpl implements TransactionService {
 
@@ -51,9 +48,6 @@ public class TransactionServiceImpl implements TransactionService {
 
     @Autowired
     private CurrencyService currencyService;
-    @Autowired
-    private EmailService emailService;
-
     @Autowired
     private EmailService emailService;
 
