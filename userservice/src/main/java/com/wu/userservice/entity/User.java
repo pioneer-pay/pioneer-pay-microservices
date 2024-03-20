@@ -1,5 +1,6 @@
 package com.wu.userservice.entity;
 
+import java.time.Instant;
 import java.util.Date;
 
 import javax.persistence.Column;
@@ -9,7 +10,7 @@ import javax.persistence.Table;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Pattern;
-
+import lombok.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -39,5 +40,19 @@ public class User {
     private String city;
     private String state;
     private String password;
+    
+    //for verification using otp
+    private String otp;
+    private boolean verification;
+
+    private Instant otpExpiration;
+
+    public void setOtpExpiration(Instant otpExpiration) {
+        this.otpExpiration = otpExpiration;
+    }
+
+    public Instant getOtpExpiration() {
+        return otpExpiration;
+    }
      
 }
