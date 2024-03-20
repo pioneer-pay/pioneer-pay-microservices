@@ -22,5 +22,6 @@ public interface AccountService {
     ApiResponse updateBalance(UpdateRequest updateRequest);
 
     ApiResponse updateAccountDetails(String userId,Account account);
-   
+
+    String getUserIdByAccountId(String accountId);   
 }
