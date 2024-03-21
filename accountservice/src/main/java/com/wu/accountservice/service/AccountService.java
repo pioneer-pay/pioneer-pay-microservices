@@ -23,5 +23,5 @@ public interface AccountService {
 
     ApiResponse updateAccountDetails(String userId,Account account);
 
-    String getUserIdByAccountId(String accountId);
+    String getUserIdByAccountId(String accountId);   
 }

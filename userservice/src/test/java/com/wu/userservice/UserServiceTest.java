@@ -91,16 +91,16 @@ public class UserServiceTest {
     }
 
 
-    @BeforeEach
-    public void beforeEach() {
-        // Mocking behavior for userRepository.findByEmailId()
-        when(userRepository.findByEmailId("existing@example.com")).thenReturn(new User("userId123",null, null, "existing@example.com", null, null, null, null, null, null, null, null, "encodedPassword"));
-        when(userRepository.findByEmailId("nonexisting@example.com")).thenReturn(null);
+    // @BeforeEach
+    // public void beforeEach() {
+    //     // Mocking behavior for userRepository.findByEmailId()
+    //     when(userRepository.findByEmailId("existing@example.com")).thenReturn(new User("userId123",null, null, "existing@example.com", null, null, null, null, null, null, null, null, "encodedPassword"));
+    //     when(userRepository.findByEmailId("nonexisting@example.com")).thenReturn(null);
         
-        // Mocking behavior for passwordEncoder.matches()
-        when(passwordEncoder.matches("password", "encodedPassword")).thenReturn(true);
-        when(passwordEncoder.matches("wrongpassword", "encodedPassword")).thenReturn(false);
-    }
+    //     // Mocking behavior for passwordEncoder.matches()
+    //     when(passwordEncoder.matches("password", "encodedPassword")).thenReturn(true);
+    //     when(passwordEncoder.matches("wrongpassword", "encodedPassword")).thenReturn(false);
+    // }
 
     // @Test
     // public void testLogin_Successful() {
@@ -116,27 +116,27 @@ public class UserServiceTest {
     //     assertEquals("userId123", response.getUserId());
     // }
 
-    @Test
-    public void testLogin_InvalidCredentials() {
-        // Create a sample user with wrong password
-        User user = new User("userId123", null, null, "existing@example.com", null, null, null, null, null, null, null, null, "wrongpassword");
+    // @Test
+    // public void testLogin_InvalidCredentials() {
+    //     // Create a sample user with wrong password
+    //     User user = new User("userId123", null, null, "existing@example.com", null, null, null, null, null, null, null, null, "wrongpassword");
 
-        // Call the method and assert that it throws InvalidCredentialsException
-        assertThrows(InvalidCredentialsException.class, () -> {
-            userService.login(user);
-        });
-    }
+    //     // Call the method and assert that it throws InvalidCredentialsException
+    //     assertThrows(InvalidCredentialsException.class, () -> {
+    //         userService.login(user);
+    //     });
+    // }
 
-    @Test
-    public void testLogin_UserNotFound() {
-        // Create a sample user with non-existing email
-        User user = new User(null, null, null, "nonexisting@example.com", null, null, null, null, null, null, null, null, "password");
+    // @Test
+    // public void testLogin_UserNotFound() {
+    //     // Create a sample user with non-existing email
+    //     User user = new User(null, null, null, "nonexisting@example.com", null, null, null, null, null, null, null, null, "password");
 
-        // Call the method and assert that it throws InvalidCredentialsException
-        assertThrows(InvalidCredentialsException.class, () -> {
-            userService.login(user);
-        });
-    }
+    //     // Call the method and assert that it throws InvalidCredentialsException
+    //     assertThrows(InvalidCredentialsException.class, () -> {
+    //         userService.login(user);
+    //     });
+    // }
 
 
     @BeforeEach

@@ -16,6 +16,8 @@ import com.wu.transaction.entity.PaymentMethod;
 import com.wu.transaction.entity.ReminderStatus;
 import com.wu.transaction.entity.SendMoneyReminder;
 import com.wu.transaction.entity.Email;
+import com.wu.transaction.entity.ReminderStatus;
+import com.wu.transaction.entity.SendMoneyReminder;
 import com.wu.transaction.entity.Summary;
 import com.wu.transaction.entity.Transaction;
 import com.wu.transaction.entity.UpdateBalance;
@@ -23,6 +25,7 @@ import com.wu.transaction.entity.dao.NotificationRequest;
 import com.wu.transaction.external.AccountFeignClient;
 import com.wu.transaction.external.UserFeignClient;
 import com.wu.transaction.payload.ApiResponse;
+import com.wu.transaction.repository.SendMoneyReminderRepository;
 import com.wu.transaction.repository.TransactionRepository;
 import com.wu.transaction.repository.SendMoneyReminderRepository;
 import com.wu.transaction.service.ReminderSchedulingService;
@@ -30,16 +33,14 @@ import com.wu.transaction.service.TransactionService;
 import com.wu.transaction.service.emailService.EmailService;
 import com.wu.transaction.service.exchnageRate.CurrencyService;
 import com.wu.transaction.service.exchnageRate.ExchangeService;
-
 @Service
 public class TransactionServiceImpl implements TransactionService {
 
     @Autowired
     private TransactionRepository transactionRepository;
-    
     @Autowired
     private SendMoneyReminderRepository sendMoneyReminderRepository;
-
+    
     @Autowired
     private ReminderSchedulingService reminderSchedulingService;
     
@@ -58,7 +59,6 @@ public class TransactionServiceImpl implements TransactionService {
 
     @Autowired
     private CurrencyService currencyService;
-    
     @Autowired
     private EmailService emailService;
 
@@ -93,6 +93,7 @@ public class TransactionServiceImpl implements TransactionService {
         logger.info("Notification addedd successfully!");
         logger.info("Transaction Initiated ,Please wait for the successful completion of the transaction.");
         return new ApiResponse("Transaction Initiated..",true);
+
     }
     
     @Override
@@ -254,10 +255,5 @@ public class TransactionServiceImpl implements TransactionService {
          summary.setRate(rate);
          return summary;
     }
-
- 
-
-    
-
     
 }

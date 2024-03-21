@@ -39,9 +39,7 @@ public class SendMoneyReminder {
     
     private Date date;
     private Time time;
-    // private String combineddatetime;
     private LocalDateTime datetime;
-
     private String sourceCountry;
     private String destinationCountry;
     private String payOut;

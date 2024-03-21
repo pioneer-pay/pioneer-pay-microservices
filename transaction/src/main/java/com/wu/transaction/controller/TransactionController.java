@@ -76,10 +76,10 @@ public class TransactionController {
           return ResponseEntity.status(HttpStatus.OK).body(transactionService.saveReminder(sendMoneyReminder));
       }
 
-
     @PostMapping("/email/send/{to}")
     public String sendEmail(@PathVariable String to,@RequestBody Email email){
         emailService.sendEmail(to, email);
         return "successfully send the mail";
     }
+
 }
