@@ -17,6 +17,8 @@ import com.wu.accountservice.entity.Account;
 import com.wu.accountservice.entity.UpdateRequest;
 import com.wu.accountservice.payload.ApiResponse;
 import com.wu.accountservice.service.AccountService;
+import org.springframework.web.bind.annotation.RequestParam;
+
 
 
 @RestController
@@ -69,11 +71,10 @@ public class AccountController {
     return ResponseEntity.status(HttpStatus.OK).body(accountService.getAll());
    }
 
-    @GetMapping("/get/{accountId}")
+  @GetMapping("/get/{accountId}")
    public ResponseEntity<List<Account>>getAllAccountsExcept(@PathVariable String accountId){
     return ResponseEntity.status(HttpStatus.OK).body(accountService.getAllExcept(accountId));
    }
-
 
    @GetMapping("/get/userid/{accountId}")
    public ResponseEntity<String>getUserIdByAccountId(@PathVariable String accountId){

@@ -21,7 +21,8 @@ import com.wu.userservice.entity.Transaction;
 import com.wu.userservice.entity.User;
 import com.wu.userservice.payload.ApiResponse;
 import com.wu.userservice.service.UserRegiService;
-
+import javax.validation.Valid;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @RestController
 @RequestMapping("/api/user")
@@ -84,8 +85,6 @@ public class AuthController {
     public ResponseEntity<String>getEmailByUserId(@PathVariable String userId){
         return ResponseEntity.status(HttpStatus.OK).body(userRegiService.getEmailByUserId(userId));
     }
-
-
     
 
 }
