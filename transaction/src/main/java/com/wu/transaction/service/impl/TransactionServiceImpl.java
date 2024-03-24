@@ -121,12 +121,12 @@ public class TransactionServiceImpl implements TransactionService {
              Double fee = currencyService.getFeeByCode(transaction.getBaseCurrencyCode());
              feeAmount = (transaction.getAmount() * fee) / 100;
 
-            Double transactionAmountAfterFee = transaction.getAmount() - feeAmount;
+            Double transactionAmountAfterFee = transaction.getAmount() + feeAmount;
             transaction.setCommission(feeAmount);
     
-            double convertedAmount = exchangeService.convertCurrency(transaction.getBaseCurrencyCode(), transaction.getTargetCurrencyCode(), transactionAmountAfterFee);
+            double convertedAmount = exchangeService.convertCurrency(transaction.getBaseCurrencyCode(), transaction.getTargetCurrencyCode(), transaction.getAmount());
     
-            if (senderBalance < transaction.getAmount()) {
+            if (senderBalance < transactionAmountAfterFee) {
                 logger.error("Insufficient balance{}");
                 transaction.setStatus("FAILED");
                 transaction.setDateTime(LocalDateTime.now());
@@ -154,7 +154,8 @@ public class TransactionServiceImpl implements TransactionService {
                 return new ApiResponse("Insufficient balance", false);
             }
     
-            UpdateBalance updateSenderBalance = new UpdateBalance(transaction.getFromAccountId(), senderBalance - transaction.getAmount());
+            UpdateBalance updateSenderBalance = new UpdateBalance(transaction.getFromAccountId(), senderBalance - transactionAmountAfterFee);
+            transaction.setAmount(transactionAmountAfterFee);
             transaction.setTransferedAmount(convertedAmount);
             UpdateBalance updateReceiverBalance = new UpdateBalance(transaction.getToAccountId(), receiverBalance + convertedAmount);
             accountFeignClient.updateBalance(updateSenderBalance);
@@ -222,24 +223,27 @@ public class TransactionServiceImpl implements TransactionService {
         summary.setBaseCurrencyCode(baseCurrencyCode);
         transaction.setTargetCurrencyCode(targetCurrencyCode);
         summary.setTargetCurrencyCode(targetCurrencyCode);
-        transaction.setAmount(amount);
-        summary.setAmount(amount);
+//        transaction.setAmount(transactionAmountAfterFee);
+//        summary.setAmount(amount);
         Double fee= currencyService.getFeeByCode(baseCurrencyCode);
         Double commission= amount*fee/100;
         transaction.setCommission(commission);
         summary.setCommission(commission);
-        Double transferAmountAfterfee=  transaction.getAmount() - (transaction.getAmount()*fee/100);
+        Double transferAmountAfterfee=  amount + commission;
         Double receiveAmount=0.0;
         Double rate=0.0;
         try {
-            receiveAmount = exchangeService.convertCurrency(transaction.getBaseCurrencyCode(),transaction.getTargetCurrencyCode() , transferAmountAfterfee);
-            rate=receiveAmount/transferAmountAfterfee;
+            receiveAmount = exchangeService.convertCurrency(transaction.getBaseCurrencyCode(),transaction.getTargetCurrencyCode() , amount);
+            rate=receiveAmount/amount;
         } catch (Exception e) {
             e.printStackTrace();
         }
+        summary.setAmount(transferAmountAfterfee);
+        transaction.setAmount(transferAmountAfterfee);
          transaction.setTransferedAmount(receiveAmount);
          summary.setReceivedMoney(receiveAmount);
          summary.setRate(rate);
+        System.out.println(summary.toString());
          return summary;
     }
     
