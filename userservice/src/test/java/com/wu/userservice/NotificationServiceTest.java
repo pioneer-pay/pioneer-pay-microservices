@@ -6,6 +6,9 @@ import static org.mockito.Mockito.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+
+import javax.persistence.EntityNotFoundException;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -129,6 +132,82 @@ public class NotificationServiceTest {
         assertEquals(2, unreadNotifications.size());
         assertEquals("Notification 1", unreadNotifications.get(0).getMessage());
         assertEquals("Notification 2", unreadNotifications.get(1).getMessage());
+    }
+
+     @Test
+    void markNotificationAsRead_NotificationFound() {
+        // Given
+        Long notificationId = 1L;
+        Notification notification = new Notification();
+        notification.setId(notificationId);
+        when(notificationRepository.findById(notificationId)).thenReturn(Optional.of(notification));
+
+        // When
+        notificationService.markNotificationAsRead(notificationId);
+
+        // Then
+        verify(notificationRepository, times(1)).findById(notificationId);
+        verify(notificationRepository, times(1)).save(notification);
+    }
+
+    @Test
+    void markNotificationAsRead_NotificationNotFound() {
+        // Given
+        Long notificationId = 1L;
+        when(notificationRepository.findById(notificationId)).thenReturn(Optional.empty());
+
+        // When
+        try {
+            notificationService.markNotificationAsRead(notificationId);
+        } catch (EntityNotFoundException ex) {
+            // Then
+            verify(notificationRepository, times(1)).findById(notificationId);
+            verify(notificationRepository, never()).save(any());
+        }
+    }
+
+    @Test
+    void markNotificationAsRead_ExceptionThrown() {
+        // Given
+        Long notificationId = 1L;
+        when(notificationRepository.findById(notificationId)).thenThrow(new RuntimeException("Something went wrong"));
+
+        // When
+        try {
+            notificationService.markNotificationAsRead(notificationId);
+        } catch (Exception ex) {
+            // Then
+            verify(notificationRepository, times(1)).findById(notificationId);
+            verify(notificationRepository, never()).save(any());
+           
+        }
+    }
+
+    @Test
+    public void testMarkAllNotificationsAsRead() {
+        // Arrange
+        List<Notification> notifications = new ArrayList<>();
+        notifications.add(new Notification());
+        notifications.add(new Notification());
+
+        when(notificationRepository.findAll()).thenReturn(notifications);
+
+        // Act
+        notificationService.markAllNotificationsAsRead();
+
+        // Assert
+        verify(notificationRepository, times(1)).findAll();
+        verify(notificationRepository, times(1)).saveAll(notifications);
+    }
+
+    @Test
+    public void testMarkAllNotificationsAsRead_Exception() {
+        // Arrange
+        when(notificationRepository.findAll()).thenThrow(new RuntimeException("Test Exception"));
+
+        // Act
+        notificationService.markAllNotificationsAsRead();
+
     }
 
 }
