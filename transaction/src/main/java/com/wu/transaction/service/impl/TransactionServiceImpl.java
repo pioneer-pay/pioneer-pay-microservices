@@ -1,13 +1,20 @@
 package com.wu.transaction.service.impl;
 
+import java.sql.Date;
+import java.sql.Time;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
+import java.util.UUID;
 
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 
+import com.wu.transaction.entity.PaymentMethod;
+import com.wu.transaction.entity.ReminderStatus;
+import com.wu.transaction.entity.SendMoneyReminder;
 import com.wu.transaction.entity.Email;
 import com.wu.transaction.entity.ReminderStatus;
 import com.wu.transaction.entity.SendMoneyReminder;
@@ -20,6 +27,8 @@ import com.wu.transaction.external.UserFeignClient;
 import com.wu.transaction.payload.ApiResponse;
 import com.wu.transaction.repository.SendMoneyReminderRepository;
 import com.wu.transaction.repository.TransactionRepository;
+import com.wu.transaction.repository.SendMoneyReminderRepository;
+import com.wu.transaction.service.ReminderSchedulingService;
 import com.wu.transaction.service.TransactionService;
 import com.wu.transaction.service.emailService.EmailService;
 import com.wu.transaction.service.exchnageRate.CurrencyService;
@@ -33,6 +42,9 @@ public class TransactionServiceImpl implements TransactionService {
     private SendMoneyReminderRepository sendMoneyReminderRepository;
     
     @Autowired
+    private ReminderSchedulingService reminderSchedulingService;
+    
+    @Autowired
     private ExchangeService exchangeService;
 
 
@@ -42,7 +54,6 @@ public class TransactionServiceImpl implements TransactionService {
         this.accountFeignClient = accountFeignClient;
     }
 
-
     @Autowired
     private UserFeignClient userFeignClient;
 
@@ -50,6 +61,7 @@ public class TransactionServiceImpl implements TransactionService {
     private CurrencyService currencyService;
     @Autowired
     private EmailService emailService;
+
 
     private final org.slf4j.Logger logger = LoggerFactory.getLogger(TransactionServiceImpl.class);
 
@@ -83,8 +95,8 @@ public class TransactionServiceImpl implements TransactionService {
         return new ApiResponse("Transaction Initiated..",true);
 
     }
- 
-  @Override
+    
+    @Override
     public ApiResponse saveReminder(SendMoneyReminder sendMoneyReminder) {
         try {
             LocalDateTime reminderDateTime = LocalDateTime.of(sendMoneyReminder.getDate().toLocalDate(), sendMoneyReminder.getTime().toLocalTime());
@@ -94,8 +106,8 @@ public class TransactionServiceImpl implements TransactionService {
             SendMoneyReminder savedReminder=sendMoneyReminderRepository.save(sendMoneyReminder);
             logger.info("Successfully saved the reminder to the database");
             
-            //Schedule the reminder for sending an email
-            // reminderSchedulingService.scheduleReminderIfNeeded(savedReminder);
+            // Schedule the reminder for sending an email
+            reminderSchedulingService.scheduleReminderIfNeeded(savedReminder);
             
             return new ApiResponse("Reminder Created!", true);
         } catch (RuntimeException e) {
@@ -108,6 +120,7 @@ public class TransactionServiceImpl implements TransactionService {
             return new ApiResponse("An unexpected error occurred", false);
         }
     }
+
 
     //completion of transfer
     @Override

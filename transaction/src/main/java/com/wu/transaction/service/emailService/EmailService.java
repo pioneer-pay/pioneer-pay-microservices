@@ -12,14 +12,14 @@ import com.wu.transaction.service.impl.TransactionServiceImpl;
 public class EmailService {
     @Autowired
     private JavaMailSender javaMailSender;
-
+ 
     private final org.slf4j.Logger logger = LoggerFactory.getLogger(TransactionServiceImpl.class);
-
+ 
     @Value("${spring.mail.username}")
     private String senderMail;
-
+ 
     public void sendEmail(String to,Email email){
-
+ 
         try{
             SimpleMailMessage simpleMailMessage=new SimpleMailMessage();
             simpleMailMessage.setFrom(senderMail);
@@ -35,3 +35,4 @@ public class EmailService {
     }
     }
 }
+ 

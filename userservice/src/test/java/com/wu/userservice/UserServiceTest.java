@@ -90,7 +90,6 @@ public class UserServiceTest {
         assertEquals("user with existing@example.com is already exist", exception.getMessage());
     }
 
-
     //@BeforeEach
     //public void beforeEach() {
         // Mocking behavior for userRepository.findByEmailId()
@@ -101,6 +100,7 @@ public class UserServiceTest {
         //when(passwordEncoder.matches("password", "encodedPassword")).thenReturn(true);
         //when(passwordEncoder.matches("wrongpassword", "encodedPassword")).thenReturn(false);
     //}
+
 
     // @Test
     // public void testLogin_Successful() {
@@ -137,7 +137,6 @@ public class UserServiceTest {
             //userService.login(user);
         //});
     //}
-
 
     @BeforeEach
     public void setUp() {

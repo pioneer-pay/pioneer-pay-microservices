@@ -22,10 +22,9 @@ import com.wu.userservice.entity.Transaction;
 import com.wu.userservice.entity.User;
 import com.wu.userservice.payload.ApiResponse;
 import com.wu.userservice.service.UserRegiService;
-
-import javax.mail.MessagingException;
 import javax.validation.Valid;
 import org.springframework.web.bind.annotation.RequestParam;
+import javax.mail.MessagingException;
 @RestController
 @RequestMapping("/api/user")
 @CrossOrigin
