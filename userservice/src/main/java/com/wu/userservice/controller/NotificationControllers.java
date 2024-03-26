@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -40,6 +41,18 @@ public class NotificationControllers {
     @GetMapping("/all/{userId}")
     public ResponseEntity<List<Notification>> getAllNotifications(@PathVariable String userId){
        return ResponseEntity.status(HttpStatus.OK).body(notificationService.getAllNotifications(userId));
+    }
+
+    //set as read notification
+    @PutMapping("/{notificationId}/read")
+    public void markNotificationAsRead(@PathVariable Long notificationId) {
+        notificationService.markNotificationAsRead(notificationId);
+    }
+ 
+    //set all notification as read
+    @PutMapping("/mark-all-read")
+    public void markAllNotificationsAsRead() {
+        notificationService.markAllNotificationsAsRead();
     }
     
 }
