@@ -70,7 +70,7 @@ public class ReminderSchedulingService {
         try{
             // Construct your email message based on the reminder details
             String subject = "Reminder: Send Money";
-            String body = String.format("Don't forget to send $%.2f to %s.", reminder.getAmount(), reminder.getDestinationCountry());
+            String body = String.format("Don't forget to send $%.2f from %s to %s via %s%nClick on the below link:", reminder.getAmount(),reminder.getSourceCountry(),reminder.getDestinationCountry(),reminder.getPayIn());
             schedulerEmailService.sendEmail(reminder.getCreatedBy(), subject, body);
             
             // Optionally update the reminder status in the database to indicate the email has been sent
